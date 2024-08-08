@@ -6,28 +6,27 @@ import './Auth.css';
 function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSignup = () => {
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find(u => u.username === username)) {
+      setError('Username already exists');
       return;
     }
-
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const userExists = users.some(u => u.username === username);
-
-    if (userExists) {
-      setError('Username already taken');
-    } else {
-      const newUser = { id: Date.now(), username, password };
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      navigate('/login');
-    }
+    const newUser = {
+      id: Date.now(),
+      username,
+      password,
+    };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('loggedIn', true);
+    localStorage.setItem('userId', newUser.id);
+    navigate('/login');
   };
+
 
   return (
     <div className="auth-wrapper">
